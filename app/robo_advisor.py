@@ -1,7 +1,8 @@
 # app/robo_advisor.py
-
-import requests
+import os
+import csv
 import json
+import requests
 
 def to_usd(price):
     return "${0:,.2f}".format(price)
@@ -48,5 +49,27 @@ print("-------------------------")
 print("RECOMMENDATION: BUY!")
 print("RECOMMENDATION REASON: TODO")
 print("-------------------------")
+print("WRITING DATA TO CSV...")
+print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
+
+csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+
+csv_headers = ["timestamp", "open",  "high", "low", "close","volume"]
+
+with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
+    writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+    writer.writeheader() # uses fieldnames set above
+
+    for date in dates:
+        daily_prices = tsd[date]
+        writer.writerow({
+            "timestamp": date,
+            "open": to_usd(float(daily_prices["1. open"])),
+            "high": to_usd(float(daily_prices["2. high"])),
+            "low": to_usd(float(daily_prices["3. low"])),
+            "close": to_usd(float(daily_prices["4. close"])),
+            "volume": daily_prices["5. volume"]
+        })
+    
