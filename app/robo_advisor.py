@@ -2,18 +2,39 @@
 import os
 import csv
 import json
+import datetime
 import requests
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def to_usd(price):
     return "${0:,.2f}".format(price)
 
-request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=demo"
+symbol_error = True
 
-response = requests.get(request_url)
+while symbol_error == True:
 
-parsed_response = json.loads(response.text)
+    symbol = input("Please enter a stock symbol: ")
 
-last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
+    request_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    api_key = os.environ.get("api_key_env")
+
+    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
+
+    response = requests.get(request_url)
+
+    parsed_response = json.loads(response.text)
+
+    try:
+        last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
+        symbol_error = False
+    except:
+        print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+
+
 
 tsd = parsed_response["Time Series (Daily)"]
 
@@ -36,10 +57,10 @@ recent_high = max(high_prices)
 recent_low = min(low_prices)
 
 print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
+print(f"SELECTED SYMBOL: {symbol.upper()}")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm")
+print(f"REQUEST AT: {request_time}")
 print("-------------------------")
 print("LATEST DAY: " + last_refreshed)
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
