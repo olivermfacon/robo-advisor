@@ -11,30 +11,50 @@ import plotly.graph_objs as go
 def to_usd(price):
     return "${0:,.2f}".format(price)
 
-while True:
+pre_valid_error = True
+
+
+while pre_valid_error == True:
+    count = 0
     symbol = input("Please enter a stock symbol: ").upper()
-    
     if symbol == "DONE":
         break
+
+    for char in symbol:
+        if char.isdigit(): #https://www.digitalocean.com/community/tutorials/how-to-use-break-continue-and-pass-statements-when-working-with-loops-in-python-3
+            count += 1
     
-    request_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-
-   
-    api_key = os.environ.get("api_key_env")
-
-    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
-
-    
-    response = requests.get(request_url)
-
-    
-    parsed_response = json.loads(response.text)
-
-    try:
-        last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
-        break
-    except:
+    if count > 0:
         print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+    else:
+        pre_valid_error = False
+
+
+    if pre_valid_error == False:
+        if len(symbol) < 1 or len(symbol) > 4:
+            print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+            pre_valid_error = True
+        else: 
+            pre_valid_error = False
+
+    if pre_valid_error == False:
+        request_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+        api_key = os.environ.get("api_key_env")
+
+        request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
+
+        
+        response = requests.get(request_url)
+
+        
+        parsed_response = json.loads(response.text)
+
+        try:
+            last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
+        except:
+            pre_valid_error = True
+            print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
 
 
 
