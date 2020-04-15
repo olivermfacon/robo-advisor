@@ -11,15 +11,16 @@ def test_to_usd():
     result = to_usd(21.99)
     assert result == "$21.99"
 
-CI_ENV = os.environ.get("api_key_env") == "true"
+#CI_ENV = os.environ.get("api_key_env") == "true"
+#
+#@pytest.mark.skipif(CI_ENV==True, reason="to avoid configuring credentials on, and issuing requests from, the CI server")
+#def test_get_response():
+#    symbol = "MSFT"
+#
+#    parsed_response = get_response(symbol)
+#
+#    assert isinstance(parsed_response, dict)
+#    assert "Meta Data" in parsed_response.keys()
+#    assert "Time Series (Daily)" in parsed_response.keys()
+#    assert parsed_response["Meta Data"]["2. Symbol"] == symbol
 
-@pytest.mark.skipif(CI_ENV==True, reason="to avoid configuring credentials on, and issuing requests from, the CI server")
-def test_get_response():
-    symbol = "MSFT"
-
-    parsed_response = get_response(symbol)
-
-    assert isinstance(parsed_response, dict)
-    assert "Meta Data" in parsed_response.keys()
-    assert "Time Series (Daily)" in parsed_response.keys()
-    assert parsed_response["Meta Data"]["2. Symbol"] == symbol
