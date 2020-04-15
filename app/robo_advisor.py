@@ -23,6 +23,23 @@ def get_response(request_url):
 def divider():
     return "-------------------------"
 
+def recommendation_and_reason(recent_low,recent_high,latest_close):
+    if float(latest_close) < 1.2*float(recent_low) and float(latest_close) > 0.8*float(recent_high):
+        recommendation = "NO RECOMMENDATION"
+        reasoning = "CANNOT ACCURATELY ESTIMATE IF STOCK IS UNDERVALUED OR OVERVALUED. LATEST CLOSING PRICE IS WITHIN 20% OF THE RECENT HIGH AND LOW." 
+    elif float(latest_close) < 1.2*float(recent_low):
+        recommendation = "BUY!"
+        reasoning = "THE STOCK IS LIKELY TO BE UNDERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT LOW)"
+    elif float(latest_close) > 0.8*float(recent_high):
+        recommendation = "SELL!"
+        reasoning = "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
+    else:
+        recommendation = "NO RECOMMENDATION"
+        reasoning = "NO SPECIFIC DATA TO ESTIMATE FUTURE PERFORMANCE"
+    recommendation_reasoning = [recommendation, reasoning]
+    return recommendation_reasoning
+
+
 if __name__ == "__main__":
     pre_valid_error = True
 
@@ -87,21 +104,12 @@ if __name__ == "__main__":
 
     recent_high = max(high_prices[0:100])
     recent_low = min(low_prices[0:100])
+    print(recent_high)
+    print(recent_low)
     year_high = max(high_prices[0:252])
     year_low = min(low_prices[0:252])
 
-    if float(latest_close) < 1.2*float(recent_low) and float(latest_close) > 0.8*float(recent_high):
-        recommendation = "NO RECOMMENDATION"
-        reasoning = "CANNOT ACCURATELY ESTIMATE IF STOCK IS UNDERVALUED OR OVERVALUED. LATEST CLOSING PRICE IS WITHIN 20% OF THE RECENT HIGH AND LOW." 
-    elif float(latest_close) < 1.2*float(recent_low):
-        recommendation = "BUY!"
-        reasoning = "THE STOCK IS LIKELY TO BE UNDERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT LOW)"
-    elif float(latest_close) > 0.8*float(recent_high):
-        recommendation = "SELL!"
-        reasoning = "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
-    else:
-        recommendation = "NO RECOMMENDATION"
-        reasoning = "NO SPECIFIC DATA TO ESTIMATE FUTURE PERFORMANCE"
+    recommendation_reasoning = recommendation_and_reason(recent_low, recent_high, latest_close)
 
     print(divider())
     print(f"SELECTED SYMBOL: {symbol}")
@@ -114,8 +122,8 @@ if __name__ == "__main__":
     print(f"YEAR HIGH : {to_usd(float(year_high))}")
     print(f"YEAR LOW : {to_usd(float(year_low))}")
     print(divider())
-    print(f"RECOMMENDATION: {recommendation}")           
-    print(f"RECOMMENDATION REASON: {reasoning}")    
+    print(f"RECOMMENDATION: {recommendation_reasoning[0]}")           
+    print(f"RECOMMENDATION REASON: {recommendation_reasoning[1]}")    
     print(divider())
     print("WRITING DATA TO CSV...")
     print(divider())

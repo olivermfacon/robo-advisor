@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from app.robo_advisor import to_usd, get_response, compile_url, divider
+from app.robo_advisor import to_usd, get_response, compile_url, divider, recommendation_and_reason
 
 def test_to_usd():
     result = to_usd(5)
@@ -18,3 +18,10 @@ def test_compile_url():
 def test_divider():
     result = divider()
     assert result == "-------------------------"
+
+def test_recommendation_and_reason():
+    recommendation_reasoning = recommendation_and_reason(170.27,327.85,287.05)
+    assert recommendation_reasoning[0] == "SELL!"
+    assert recommendation_reasoning[1] == "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
+
+    
