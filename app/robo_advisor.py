@@ -11,11 +11,15 @@ import requests
 def to_usd(price):
     return "${0:,.2f}".format(price)
     
-def get_response(symbol):
-    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
+def compile_url(symbol):
+    api_key = os.environ.get("api_key_env")
+
+    return f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
+
+def get_response(request_url):
     
     response = requests.get(request_url)
-            
+
     return json.loads(response.text)
 
 if __name__ == "__main__":
@@ -47,10 +51,10 @@ if __name__ == "__main__":
 
         if pre_valid_error == False:
             request_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            
+            request_url = compile_url(symbol)
 
-            api_key = os.environ.get("api_key_env")
-
-            parsed_response = get_response(symbol)
+            parsed_response = get_response(request_url)
 
             try:
                 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
