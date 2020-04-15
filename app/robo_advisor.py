@@ -8,22 +8,72 @@ import requests
 #import plotly
 #import plotly.graph_objs as go
 
+def ticker_error():
+    print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+
 def to_usd(price):
+    """
+    Converts a number into a formatted price with dollar sign, two decimal places, and thousand separators
+
+    Params:
+        price: the number to be formatted
+
+    Example:
+        to_usd(3.1)
+    """
     return "${0:,.2f}".format(price)
     
 def compile_url(symbol):
+    """
+    Returns a request url given a certain ticker
+
+    Params:
+        symbol: the ticker to be placed within the url
+
+    Example:
+        compile_url("MSFT")
+    """
     api_key = os.environ.get("api_key_env")
 
     return f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
 
 def get_response(request_url):
+    """
+    Puts in a request given a certain url and returns the response
+
+    Params:
+        request_url: the url where the ticker data is stored
+
+    Example:
+        get_response("https://www.alphavantage....")
+    """
     response = requests.get(request_url)
     return json.loads(response.text)
 
 def divider():
+    """
+    Returns a divider (line of dashes)
+
+    Params:
+        NONE
+
+    Example:
+        divider()
+    """
     return "-------------------------"
 
 def recommendation_and_reason(recent_low,recent_high,latest_close):
+    """
+    Generates a recommendation and reason for an investor
+
+    Params:
+        recent_low: lowest stock price in 100 days
+        recent_high: highest stock price in 100 days
+        lastest_close: closing price on most recent day
+
+    Example:
+        recommendation_and_reason(10, 20, 18.5)
+    """
     if float(latest_close) < 1.2*float(recent_low) and float(latest_close) > 0.8*float(recent_high):
         recommendation = "NO RECOMMENDATION"
         reasoning = "CANNOT ACCURATELY ESTIMATE IF STOCK IS UNDERVALUED OR OVERVALUED. LATEST CLOSING PRICE IS WITHIN 20% OF THE RECENT HIGH AND LOW." 
@@ -55,14 +105,14 @@ if __name__ == "__main__":
                 count += 1
         
         if count > 0:
-            print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+            ticker_error()
         else:
             pre_valid_error = False
 
 
         if pre_valid_error == False:
             if len(symbol) < 1 or len(symbol) > 4:
-                print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+                ticker_error()
                 pre_valid_error = True
             else: 
                 pre_valid_error = False
@@ -78,7 +128,7 @@ if __name__ == "__main__":
                 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
             except:
                 pre_valid_error = True
-                print("INVALID STOCK SYMBOL. PLEASE TRY AGAIN.")
+                ticker_error()
 
 
 
@@ -104,8 +154,6 @@ if __name__ == "__main__":
 
     recent_high = max(high_prices[0:100])
     recent_low = min(low_prices[0:100])
-    print(recent_high)
-    print(recent_low)
     year_high = max(high_prices[0:252])
     year_low = min(low_prices[0:252])
 
