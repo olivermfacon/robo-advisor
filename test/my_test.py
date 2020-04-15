@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from app.robo_advisor import to_usd, get_response, compile_url
+from app.robo_advisor import to_usd, get_response, compile_url, divider, recommendation_and_reason
 
 def test_to_usd():
     result = to_usd(5)
@@ -15,16 +15,13 @@ def test_compile_url():
     result = compile_url("MSFT")
     assert result[:72] == "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT"
 
-#CI_ENV = os.environ.get("api_key_env") == "true"
-#
-#@pytest.mark.skipif(CI_ENV==True, reason="to avoid configuring credentials on, and issuing requests from, the CI server")
-#def test_get_response():
-#    symbol = "MSFT"
-#
-#    parsed_response = get_response(symbol)
-#
-#    assert isinstance(parsed_response, dict)
-#    assert "Meta Data" in parsed_response.keys()
-#    assert "Time Series (Daily)" in parsed_response.keys()
-#    assert parsed_response["Meta Data"]["2. Symbol"] == symbol
+def test_divider():
+    result = divider()
+    assert result == "-------------------------"
 
+def test_recommendation_and_reason():
+    recommendation_reasoning = recommendation_and_reason(170.27,327.85,287.05)
+    assert recommendation_reasoning[0] == "SELL!"
+    assert recommendation_reasoning[1] == "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
+
+    

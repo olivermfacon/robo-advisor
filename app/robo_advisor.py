@@ -17,10 +17,28 @@ def compile_url(symbol):
     return f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
 
 def get_response(request_url):
-    
     response = requests.get(request_url)
-
     return json.loads(response.text)
+
+def divider():
+    return "-------------------------"
+
+def recommendation_and_reason(recent_low,recent_high,latest_close):
+    if float(latest_close) < 1.2*float(recent_low) and float(latest_close) > 0.8*float(recent_high):
+        recommendation = "NO RECOMMENDATION"
+        reasoning = "CANNOT ACCURATELY ESTIMATE IF STOCK IS UNDERVALUED OR OVERVALUED. LATEST CLOSING PRICE IS WITHIN 20% OF THE RECENT HIGH AND LOW." 
+    elif float(latest_close) < 1.2*float(recent_low):
+        recommendation = "BUY!"
+        reasoning = "THE STOCK IS LIKELY TO BE UNDERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT LOW)"
+    elif float(latest_close) > 0.8*float(recent_high):
+        recommendation = "SELL!"
+        reasoning = "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
+    else:
+        recommendation = "NO RECOMMENDATION"
+        reasoning = "NO SPECIFIC DATA TO ESTIMATE FUTURE PERFORMANCE"
+    recommendation_reasoning = [recommendation, reasoning]
+    return recommendation_reasoning
+
 
 if __name__ == "__main__":
     pre_valid_error = True
@@ -86,51 +104,29 @@ if __name__ == "__main__":
 
     recent_high = max(high_prices[0:100])
     recent_low = min(low_prices[0:100])
+    print(recent_high)
+    print(recent_low)
     year_high = max(high_prices[0:252])
     year_low = min(low_prices[0:252])
 
-    if float(latest_close) < 1.2*float(recent_low) and float(latest_close) > 0.8*float(recent_high):
-        recommendation = "NO RECOMMENDATION"
-        reasoning = "CANNOT ACCURATELY ESTIMATE IF STOCK IS UNDERVALUED OR OVERVALUED. LATEST CLOSING PRICE IS WITHIN 20% OF THE RECENT HIGH AND LOW." 
-    elif float(latest_close) < 1.2*float(recent_low):
-        recommendation = "BUY!"
-        reasoning = "THE STOCK IS LIKELY TO BE UNDERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT LOW)"
-    elif float(latest_close) > 0.8*float(recent_high):
-        recommendation = "SELL!"
-        reasoning = "THE STOCK IS LIKELY TO BE OVERVALUED (THE CLOSING PRICE IS WITHIN 20% OF THE STOCK'S RECENT HIGH)"
-    else:
-        recommendation = "NO RECOMMENDATION"
-        reasoning = "NO SPECIFIC DATA TO ESTIMATE FUTURE PERFORMANCE"
+    recommendation_reasoning = recommendation_and_reason(recent_low, recent_high, latest_close)
 
-    print("-------------------------")
+    print(divider())
     print(f"SELECTED SYMBOL: {symbol}")
-    print("-------------------------")
+    print(divider())
     print("REQUESTING STOCK MARKET DATA...")
     print(f"REQUEST AT: "+ request_time)
-    print("-------------------------")
+    print(divider())
     print(f"LATEST DAY: {last_refreshed}")
     print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
     print(f"YEAR HIGH : {to_usd(float(year_high))}")
     print(f"YEAR LOW : {to_usd(float(year_low))}")
-    print("-------------------------")
-    print(f"RECOMMENDATION: {recommendation}")           
-    print(f"RECOMMENDATION REASON: {reasoning}")    
-    print("-------------------------")
+    print(divider())
+    print(f"RECOMMENDATION: {recommendation_reasoning[0]}")           
+    print(f"RECOMMENDATION REASON: {recommendation_reasoning[1]}")    
+    print(divider())
     print("WRITING DATA TO CSV...")
-    print("-------------------------")
-
-    #fig = go.Figure()
-
-    #fig.update_layout(          
-    #    title=f"{symbol} Stock Price (1yr)",
-    #    xaxis_title="Date",
-    #    yaxis_title="Stock Price (USD)",        #consulted https://plot.ly/python/figure-labels/ for all fig functions
-    #)#
-    #fig.add_trace(go.Scatter(
-    #    x = dates[0:252],
-    #    y = closing_prices[0:252]
-    #))#
-    #fig.show()
+    print(divider())
 
     csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
