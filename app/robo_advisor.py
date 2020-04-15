@@ -5,8 +5,8 @@ import os
 import datetime
 import requests
 
-import plotly
-import plotly.graph_objs as go
+#import plotly
+#import plotly.graph_objs as go
 
 def to_usd(price):
     return "${0:,.2f}".format(price)
@@ -113,20 +113,18 @@ print("-------------------------")
 print("WRITING DATA TO CSV...")
 print("-------------------------")
 
-fig = go.Figure()
+#fig = go.Figure()
 
-fig.update_layout(          
-    title=f"{symbol} Stock Price (1yr)",
-    xaxis_title="Date",
-    yaxis_title="Stock Price (USD)",        #consulted https://plot.ly/python/figure-labels/ for all fig functions
-)
-
-fig.add_trace(go.Scatter(
-    x = dates[0:252],
-    y = closing_prices[0:252]
-))
-
-fig.show()
+#fig.update_layout(          
+#    title=f"{symbol} Stock Price (1yr)",
+#    xaxis_title="Date",
+#    yaxis_title="Stock Price (USD)",        #consulted https://plot.ly/python/figure-labels/ for all fig functions
+#)#
+#fig.add_trace(go.Scatter(
+#    x = dates[0:252],
+#    y = closing_prices[0:252]
+#))#
+#fig.show()
 
 csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
