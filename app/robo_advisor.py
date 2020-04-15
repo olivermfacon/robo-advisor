@@ -17,10 +17,11 @@ def compile_url(symbol):
     return f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={api_key}"
 
 def get_response(request_url):
-    
     response = requests.get(request_url)
-
     return json.loads(response.text)
+
+def divider():
+    return "-------------------------"
 
 if __name__ == "__main__":
     pre_valid_error = True
@@ -102,35 +103,22 @@ if __name__ == "__main__":
         recommendation = "NO RECOMMENDATION"
         reasoning = "NO SPECIFIC DATA TO ESTIMATE FUTURE PERFORMANCE"
 
-    print("-------------------------")
+    print(divider())
     print(f"SELECTED SYMBOL: {symbol}")
-    print("-------------------------")
+    print(divider())
     print("REQUESTING STOCK MARKET DATA...")
     print(f"REQUEST AT: "+ request_time)
-    print("-------------------------")
+    print(divider())
     print(f"LATEST DAY: {last_refreshed}")
     print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
     print(f"YEAR HIGH : {to_usd(float(year_high))}")
     print(f"YEAR LOW : {to_usd(float(year_low))}")
-    print("-------------------------")
+    print(divider())
     print(f"RECOMMENDATION: {recommendation}")           
     print(f"RECOMMENDATION REASON: {reasoning}")    
-    print("-------------------------")
+    print(divider())
     print("WRITING DATA TO CSV...")
-    print("-------------------------")
-
-    #fig = go.Figure()
-
-    #fig.update_layout(          
-    #    title=f"{symbol} Stock Price (1yr)",
-    #    xaxis_title="Date",
-    #    yaxis_title="Stock Price (USD)",        #consulted https://plot.ly/python/figure-labels/ for all fig functions
-    #)#
-    #fig.add_trace(go.Scatter(
-    #    x = dates[0:252],
-    #    y = closing_prices[0:252]
-    #))#
-    #fig.show()
+    print(divider())
 
     csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
